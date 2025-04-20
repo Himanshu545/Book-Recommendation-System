@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f4f4f4;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Book Recommendation System</h1>
+    <input type="text" id="bookInput" placeholder="Enter book name">
+    <button onclick="getRecommendations()">Get Recommendations</button>
+
+    <h2>Recommended Books:</h2>
+    <ul id="recommendationsList"></ul>
+
+    <script>
+        async function getRecommendations() {
+            const bookName = document.getElementById("bookInput").value;
+            if (!bookName) {
+                alert("Please enter a book name!");
+                return;
+            }
+
+            const response = await fetch("http://127.0.0.1:5000/recommend", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ book_name: bookName }),
+            });
+
+            const data = await response.json();
+            const recommendationsList = document.getElementById("recommendationsList");
+            recommendationsList.innerHTML = "";  // Clear previous results
+
+            if (data.recommendations.length === 0 || data.recommendations[0] === "Book not found") {
+                recommendationsList.innerHTML = "<li>No recommendations found.</li>";
+                return;
+            }
+
+            data.recommendations.forEach(book => {
+                const li = document.createElement("li");
+                li.textContent = book;
+                recommendationsList.appendChild(li);
+            });
+        }
+    </script>
+
+</body>
+</html>
